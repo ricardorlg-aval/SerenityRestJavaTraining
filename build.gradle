@@ -1,0 +1,74 @@
+defaultTasks 'clean', 'test', 'aggregate'
+
+group 'com.labs.digital.aval.testing.training'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.2.9")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+    slf4jVersion = '1.7.7'
+    serenityCoreVersion = '2.2.9'
+    serenityCucumberVersion = '2.2.5'
+    jacksonVersion = '2.11.0'
+    junitVersion = '4.12'
+    lombokVersion = '1.18.12'
+    logbackVersion = '1.2.3'
+}
+
+dependencies {
+    implementation "net.serenity-bdd:serenity-core:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay-rest:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
+            "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}",
+            "com.fasterxml.jackson.module:jackson-module-parameter-names:${jacksonVersion}",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}",
+            "ch.qos.logback:logback-classic:${logbackVersion}",
+            "com.github.javafaker:javafaker:1.0.2",
+            "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testImplementation "net.serenity-bdd:serenity-cucumber5:${serenityCucumberVersion}",
+            "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-ensure:${serenityCoreVersion}",
+            "org.projectlombok:lombok:${lombokVersion}",
+            "junit:junit:${junitVersion}"
+
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+
+test {
+    testLogging.showStandardStreams = true
+    systemProperties System.getProperties()
+    include "com/labs/digital/aval/testing/training/runners/*.*"
+}
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
+gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate)
